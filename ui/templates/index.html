@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Unicode to KrutiDev Converter</title>
+    <style>
+        :root {
+            --primary: #4F46E5;
+            --primary-hover: #4338CA;
+            --bg: #F3F4F6;
+            --card-bg: #FFFFFF;
+            --text-main: #1F2937;
+            --text-sub: #6B7280;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 2.5rem;
+            border-radius: 1rem;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 480px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        p {
+            color: var(--text-sub);
+            margin-bottom: 2rem;
+        }
+
+        .upload-area {
+            border: 2px dashed #D1D5DB;
+            border-radius: 0.75rem;
+            padding: 2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 1.5rem;
+        }
+
+        .upload-area:hover,
+        .upload-area.dragover {
+            border-color: var(--primary);
+            background-color: #EEF2FF;
+        }
+
+        .icon {
+            font-size: 3rem;
+            color: #9CA3AF;
+            margin-bottom: 1rem;
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            font-size: 1rem;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-hover);
+        }
+
+        .btn:disabled {
+            background-color: #9CA3AF;
+            cursor: not-allowed;
+        }
+
+        #file-name {
+            margin-top: 1rem;
+            font-weight: 500;
+            color: var(--primary);
+            display: none;
+        }
+
+        #status {
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            min-height: 1.25rem;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>Unicode → KrutiDev 010</h1>
+        <p>Convert Hindi Docx files instantly.</p>
+
+        <div
+            style="background-color: #FEF3C7; border: 1px solid #F59E0B; padding: 10px; border-radius: 6px; color: #92400E; font-size: 0.9em; margin-bottom: 20px; text-align: left;">
+            <strong>ℹ️ IMPORTANT:</strong><br />
+            If the output looks like English "garble" (e.g. <code>fganh</code>), it means the <strong>Kruti Dev 010
+                font</strong> is not installed on your system.<br /><br />
+            The text IS converted correctly. Install the font to see it as Hindi.
+        </div>
+
+        <div class="upload-area" id="drop-zone">
+            <div class="icon">📄</div>
+            <span id="instruction">Drag & Drop or Click to Upload</span>
+            <input type="file" id="file-input" accept=".docx" style="display: none;">
+            <div id="file-name"></div>
+        </div>
+
+        <button class="btn" id="convert-btn" disabled>Convert Document</button>
+        <div id="status"></div>
+    </div>
+
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const fileNameDisplay = document.getElementById('file-name');
+        const convertBtn = document.getElementById('convert-btn');
+        const statusDiv = document.getElementById('status');
+        const instruction = document.getElementById('instruction');
+
+        let selectedFile = null;
+
+        // Click to upload
+        dropZone.addEventListener('click', () => fileInput.click());
+
+        // File selection
+        fileInput.addEventListener('change', (e) => handleFile(e.target.files[0]));
+
+        // Drag & Drop
+        dropZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        });
+
+        dropZone.addEventListener('dragleave', () => {
+            dropZone.classList.remove('dragover');
+        });
+
+        dropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+            handleFile(e.dataTransfer.files[0]);
+        });
+
+        function handleFile(file) {
+            if (file && file.name.endsWith('.docx')) {
+                selectedFile = file;
+                fileNameDisplay.textContent = file.name;
+                fileNameDisplay.style.display = 'block';
+                instruction.style.display = 'none';
+                convertBtn.disabled = false;
+                statusDiv.textContent = "";
+            } else {
+                alert("Please select a valid .docx file.");
+            }
+        }
+
+        // Convert
+        convertBtn.addEventListener('click', async () => {
+            if (!selectedFile) return;
+
+            convertBtn.disabled = true;
+            convertBtn.textContent = "Converting...";
+            statusDiv.textContent = "Processing logic...";
+
+            const formData = new FormData();
+            formData.append('file', selectedFile);
+
+            try {
+                const response = await fetch('/convert', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = response.headers.get('Content-Disposition').split('filename=')[1] || "converted.docx";
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    statusDiv.textContent = "Download started!";
+                } else {
+                    const err = await response.json();
+                    statusDiv.textContent = "Error: " + (err.detail || "Conversion failed.");
+                }
+            } catch (error) {
+                statusDiv.textContent = "Network error occurred.";
+                console.error(error);
+            } finally {
+                convertBtn.disabled = false;
+                convertBtn.textContent = "Convert Document";
+            }
+        });
+    </script>
+</body>
+
+</html>
