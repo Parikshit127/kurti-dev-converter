@@ -28,8 +28,8 @@ VOWELS = {
     'उ': 'm',
     'ऊ': 'Å',
     'ऋ': '_',
-    'ए': ',',
-    'ऐ': ',s',
+    'ए': ',s',
+    'ऐ': 'S',
     'ओ': 'vks',
     'औ': 'vkS',
     'ऑ': 'v‚',  # For English loanwords
@@ -235,8 +235,22 @@ PUNCTUATION = {
     '॰': 'Œ',      # Abbreviation sign
 }
 
-# Characters to preserve as-is
-PRESERVE_CHARS = set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 \t\n\r.,:;?!@#$%^&*()[]{}|\\/<>\'"-_+=~`')
+# ASCII/English punctuation to Kruti Dev mapping (for use in Hindi context)
+PUNCTUATION_MAP = {
+    '(': '¼',      # Alt+0188 - Opening parenthesis
+    ')': '½',      # Alt+0189 - Closing parenthesis
+    ',': ']',      # Kruti Dev comma
+    '.': '-',      # Kruti Dev period
+    '?': '\\',     # Kruti Dev question mark
+    ':': '%',      # Kruti Dev colon
+    ';': '^',      # Kruti Dev semicolon
+    '-': '&',      # Kruti Dev hyphen
+    '—': '&&',     # Em-dash
+    '–': '&',      # En-dash
+}
+
+# Characters to preserve as-is (removed punctuation that needs conversion)
+PRESERVE_CHARS = set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 \t\n\r@#$%^&*[]{}|\\/><\'"_+=~`')
 
 
 # =============================================================================
@@ -287,7 +301,10 @@ class Tokenizer:
     @classmethod
     def _get_char_type(cls, char: str) -> str:
         """Determine the type of a character."""
-        if cls.is_devanagari(char):
+        # Check Hindi punctuation BEFORE general Devanagari (since they overlap)
+        if char in '।॥':
+            return 'hindi_punct'
+        elif cls.is_devanagari(char):
             return 'hindi'
         elif char.isalpha():
             return 'english'
@@ -295,10 +312,10 @@ class Tokenizer:
             return 'number'
         elif char.isspace():
             return 'whitespace'
-        elif char in '।॥':
-            return 'hindi_punct'
-        elif char in '.,;:?!()[]{}"\'-':
+        elif char in '.,;:?!"\'':
             return 'punctuation'
+        elif char in '()-':
+            return 'bracket'  # Special handling for brackets/hyphen
         else:
             return 'other'
 
@@ -622,15 +639,34 @@ class MangalToKrutiDevConverter:
         
         # Process each token
         result_parts = []
-        for token, token_type in tokens:
+        prev_type = None
+        next_types = [t[1] for t in tokens[1:]] + [None]
+        
+        for i, (token, token_type) in enumerate(tokens):
+            next_type = next_types[i]
+            
             if token_type == 'hindi':
                 result_parts.append(self._convert_hindi(token))
             elif token_type == 'hindi_punct':
                 result_parts.append(self._convert_hindi_punct(token))
-            elif token_type in ('english', 'number', 'punctuation', 'whitespace'):
+            elif token_type == 'bracket':
+                # Convert brackets if adjacent to Hindi text
+                if prev_type == 'hindi' or next_type == 'hindi':
+                    result_parts.append(self._convert_punctuation(token))
+                else:
+                    result_parts.append(token)
+            elif token_type == 'punctuation':
+                # Convert punctuation if adjacent to Hindi text
+                if prev_type == 'hindi' or next_type == 'hindi':
+                    result_parts.append(self._convert_punctuation(token))
+                else:
+                    result_parts.append(token)  # Preserve in English context
+            elif token_type in ('english', 'number', 'whitespace'):
                 result_parts.append(token)  # Preserve as-is
             else:
                 result_parts.append(token)  # Unknown - preserve
+            
+            prev_type = token_type
         
         return ''.join(result_parts)
     
@@ -712,6 +748,13 @@ class MangalToKrutiDevConverter:
         result = []
         for char in punct:
             result.append(Mapper.map_punctuation(char))
+        return ''.join(result)
+    
+    def _convert_punctuation(self, punct: str) -> str:
+        """Convert ASCII punctuation to Kruti Dev equivalents."""
+        result = []
+        for char in punct:
+            result.append(PUNCTUATION_MAP.get(char, char))
         return ''.join(result)
 
 
