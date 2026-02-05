@@ -4,131 +4,376 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Unicode to KrutiDev Converter</title>
+    <title>Kamal Printers | Unicode to KrutiDev Converter</title>
+    <meta name="description"
+        content="Professional Hindi document conversion by Kamal Printers. Convert Unicode to KrutiDev 010 instantly.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --primary: #4F46E5;
-            --primary-hover: #4338CA;
-            --bg: #F3F4F6;
-            --card-bg: #FFFFFF;
-            --text-main: #1F2937;
-            --text-sub: #6B7280;
+            --bg-dark: #0F0F0F;
+            --bg-card: rgba(26, 26, 26, 0.85);
+            --gold: #D4AF37;
+            --gold-light: #E8C547;
+            --gold-dark: #B8860B;
+            --text-cream: #F5F5DC;
+            --text-subtle: #9CA3AF;
+            --border-subtle: rgba(212, 175, 55, 0.2);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-            background-color: var(--bg);
-            color: var(--text-main);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background: var(--bg-dark);
+            background-image:
+                radial-gradient(ellipse at 20% 20%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 80%, rgba(212, 175, 55, 0.02) 0%, transparent 50%);
+            color: var(--text-cream);
+            min-height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
-            margin: 0;
+            padding: 2rem;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.05);
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% center;
+            }
+
+            100% {
+                background-position: 200% center;
+            }
+        }
+
+        .brand {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .brand-logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold) 50%, var(--gold-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+        }
+
+        .brand-tagline {
+            font-size: 0.875rem;
+            color: var(--text-subtle);
+            font-weight: 400;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
         }
 
         .container {
-            background-color: var(--card-bg);
+            background: var(--bg-card);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
             padding: 2.5rem;
-            border-radius: 1rem;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+            border-radius: 1.5rem;
             width: 100%;
-            max-width: 480px;
+            max-width: 520px;
+            box-shadow:
+                0 25px 50px -12px rgba(0, 0, 0, 0.5),
+                0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+        }
+
+        .card-header {
             text-align: center;
-        }
-
-        h1 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-            color: var(--text-main);
-        }
-
-        p {
-            color: var(--text-sub);
             margin-bottom: 2rem;
         }
 
-        .upload-area {
-            border: 2px dashed #D1D5DB;
+        .card-header h1 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-cream);
+            margin-bottom: 0.5rem;
+        }
+
+        .card-header p {
+            color: var(--text-subtle);
+            font-size: 0.9rem;
+        }
+
+        .notice {
+            background: rgba(212, 175, 55, 0.08);
+            border: 1px solid var(--border-subtle);
+            padding: 1rem 1.25rem;
             border-radius: 0.75rem;
-            padding: 2rem;
-            cursor: pointer;
-            transition: all 0.2s;
+            font-size: 0.8rem;
+            color: var(--gold-light);
             margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .notice strong {
+            display: block;
+            margin-bottom: 0.25rem;
+            color: var(--gold);
+        }
+
+        .notice code {
+            background: rgba(0, 0, 0, 0.3);
+            padding: 0.15rem 0.4rem;
+            border-radius: 0.25rem;
+            font-family: 'SF Mono', Monaco, monospace;
+            font-size: 0.75rem;
+        }
+
+        .upload-area {
+            border: 2px dashed rgba(212, 175, 55, 0.3);
+            border-radius: 1rem;
+            padding: 2.5rem 2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 1.5rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.05) 0%, transparent 100%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
         .upload-area:hover,
         .upload-area.dragover {
-            border-color: var(--primary);
-            background-color: #EEF2FF;
+            border-color: var(--gold);
+            transform: translateY(-2px);
         }
 
-        .icon {
-            font-size: 3rem;
-            color: #9CA3AF;
+        .upload-area:hover::before,
+        .upload-area.dragover::before {
+            opacity: 1;
+        }
+
+        .upload-icon {
+            font-size: 3.5rem;
             margin-bottom: 1rem;
+            display: block;
+            animation: pulse 3s ease-in-out infinite;
         }
 
-        .btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 0.75rem 1.5rem;
-            border-radius: 0.5rem;
-            font-weight: 600;
-            width: 100%;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            font-size: 1rem;
+        .upload-text {
+            font-size: 0.95rem;
+            color: var(--text-subtle);
+            font-weight: 500;
         }
 
-        .btn:hover {
-            background-color: var(--primary-hover);
-        }
-
-        .btn:disabled {
-            background-color: #9CA3AF;
-            cursor: not-allowed;
+        .upload-hint {
+            font-size: 0.8rem;
+            color: rgba(156, 163, 175, 0.6);
+            margin-top: 0.5rem;
         }
 
         #file-name {
             margin-top: 1rem;
-            font-weight: 500;
-            color: var(--primary);
+            font-weight: 600;
+            color: var(--gold);
             display: none;
+            font-size: 0.9rem;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
+            color: #0F0F0F;
+            border: none;
+            padding: 1rem 2rem;
+            border-radius: 0.75rem;
+            font-weight: 600;
+            width: 100%;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+            letter-spacing: 0.02em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 200%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px -10px rgba(212, 175, 55, 0.4);
+        }
+
+        .btn:hover:not(:disabled)::before {
+            left: 100%;
+        }
+
+        .btn:disabled {
+            background: #3a3a3a;
+            color: #6B7280;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
         }
 
         #status {
             margin-top: 1rem;
-            font-size: 0.875rem;
+            font-size: 0.85rem;
             min-height: 1.25rem;
+            text-align: center;
+            color: var(--text-subtle);
+        }
+
+        #status.success {
+            color: #4ADE80;
+        }
+
+        #status.error {
+            color: #F87171;
+        }
+
+        .footer {
+            margin-top: 2.5rem;
+            text-align: center;
+            color: var(--text-subtle);
+            font-size: 0.75rem;
+            opacity: 0.6;
+        }
+
+        .footer a {
+            color: var(--gold);
+            text-decoration: none;
+            transition: opacity 0.2s;
+        }
+
+        .footer a:hover {
+            opacity: 0.8;
+        }
+
+        /* Loading animation */
+        .btn.loading {
+            color: transparent;
+        }
+
+        .btn.loading::after {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            top: 50%;
+            left: 50%;
+            margin-left: -10px;
+            margin-top: -10px;
+            border: 2px solid #0F0F0F;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 540px) {
+            .container {
+                padding: 2rem 1.5rem;
+            }
+
+            .brand-logo {
+                font-size: 2rem;
+            }
+
+            .upload-area {
+                padding: 2rem 1.5rem;
+            }
         }
     </style>
 </head>
 
 <body>
 
-    <div class="container">
-        <h1>Unicode → KrutiDev 010</h1>
-        <p>Convert Hindi Docx files instantly.</p>
+    <div class="brand">
+        <div class="brand-logo">Kamal Printers</div>
+        <div class="brand-tagline">Professional Printing Solutions</div>
+    </div>
 
-        <div
-            style="background-color: #FEF3C7; border: 1px solid #F59E0B; padding: 10px; border-radius: 6px; color: #92400E; font-size: 0.9em; margin-bottom: 20px; text-align: left;">
-            <strong>ℹ️ IMPORTANT:</strong><br />
-            If the output looks like English "garble" (e.g. <code>fganh</code>), it means the <strong>Kruti Dev 010
-                font</strong> is not installed on your system.<br /><br />
-            The text IS converted correctly. Install the font to see it as Hindi.
+    <div class="container">
+        <div class="card-header">
+            <h1>Unicode → KrutiDev 010</h1>
+            <p>Convert Hindi documents with precision</p>
+        </div>
+
+        <div class="notice">
+            <strong>ℹ️ Important Note</strong>
+            If output appears as <code>fganh</code>, install <strong>Kruti Dev 010</strong> font on your system.
+            The conversion is correct – the font is needed to display it.
         </div>
 
         <div class="upload-area" id="drop-zone">
-            <div class="icon">📄</div>
-            <span id="instruction">Drag & Drop or Click to Upload</span>
+            <span class="upload-icon">📄</span>
+            <span class="upload-text" id="instruction">Drag & Drop or Click to Upload</span>
+            <div class="upload-hint">.docx files only</div>
             <input type="file" id="file-input" accept=".docx" style="display: none;">
             <div id="file-name"></div>
         </div>
 
         <button class="btn" id="convert-btn" disabled>Convert Document</button>
         <div id="status"></div>
+    </div>
+
+    <div class="footer">
+        © 2026 <a href="#">Kamal Printers</a> • Premium Hindi Document Services
     </div>
 
     <script>
@@ -166,13 +411,16 @@
         function handleFile(file) {
             if (file && file.name.endsWith('.docx')) {
                 selectedFile = file;
-                fileNameDisplay.textContent = file.name;
+                fileNameDisplay.textContent = '✓ ' + file.name;
                 fileNameDisplay.style.display = 'block';
                 instruction.style.display = 'none';
+                document.querySelector('.upload-hint').style.display = 'none';
                 convertBtn.disabled = false;
                 statusDiv.textContent = "";
+                statusDiv.className = '';
             } else {
-                alert("Please select a valid .docx file.");
+                statusDiv.textContent = "Please select a valid .docx file.";
+                statusDiv.className = 'error';
             }
         }
 
@@ -181,8 +429,10 @@
             if (!selectedFile) return;
 
             convertBtn.disabled = true;
+            convertBtn.classList.add('loading');
             convertBtn.textContent = "Converting...";
-            statusDiv.textContent = "Processing logic...";
+            statusDiv.textContent = "Processing your document...";
+            statusDiv.className = '';
 
             const formData = new FormData();
             formData.append('file', selectedFile);
@@ -198,20 +448,24 @@
                     const url = window.URL.createObjectURL(blob);
                     const a = document.createElement('a');
                     a.href = url;
-                    a.download = response.headers.get('Content-Disposition').split('filename=')[1] || "converted.docx";
+                    a.download = response.headers.get('Content-Disposition')?.split('filename=')[1] || "converted.docx";
                     document.body.appendChild(a);
                     a.click();
                     document.body.removeChild(a);
-                    statusDiv.textContent = "Download started!";
+                    statusDiv.textContent = "✓ Download started successfully!";
+                    statusDiv.className = 'success';
                 } else {
                     const err = await response.json();
                     statusDiv.textContent = "Error: " + (err.detail || "Conversion failed.");
+                    statusDiv.className = 'error';
                 }
             } catch (error) {
-                statusDiv.textContent = "Network error occurred.";
+                statusDiv.textContent = "Network error. Please try again.";
+                statusDiv.className = 'error';
                 console.error(error);
             } finally {
                 convertBtn.disabled = false;
+                convertBtn.classList.remove('loading');
                 convertBtn.textContent = "Convert Document";
             }
         });
