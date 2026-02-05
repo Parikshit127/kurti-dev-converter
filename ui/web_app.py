@@ -1,6 +1,6 @@
 
 from fastapi import FastAPI, UploadFile, File, Request, HTTPException
-from fastapi.responses import FileResponse, HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, Response
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 import shutil
@@ -17,8 +17,23 @@ os.makedirs(UPLOAD_DIR, exist_ok=True)
 # Templates
 templates = Jinja2Templates(directory=os.path.join(BASE_DIR, "ui", "templates"))
 
+# Mount static files
+STATIC_DIR = os.path.join(BASE_DIR, "ui", "static")
+if os.path.exists(STATIC_DIR):
+    app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
+
 # Converter
 converter = DocxConverter()
+
+# Favicon - inline SVG to prevent 404 errors
+FAVICON_SVG = """<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <rect width="100" height="100" rx="15" fill="#6366f1"/>
+  <text x="50" y="70" font-size="50" text-anchor="middle" fill="white" font-family="sans-serif" font-weight="bold">अ</text>
+</svg>"""
+
+@app.get("/favicon.ico")
+async def favicon():
+    return Response(content=FAVICON_SVG, media_type="image/svg+xml")
 
 @app.get("/", response_class=HTMLResponse)
 async def read_root(request: Request):
