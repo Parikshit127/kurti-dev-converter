@@ -9,11 +9,15 @@ import uuid
 import logging
 import traceback
 import tempfile
+import gc
 from core.converter import DocxConverter
 
 # Setup logging
-logging.basicConfig(level=logging.INFO)
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
+
+# Constants
+MAX_FILE_SIZE = 15 * 1024 * 1024  # 15MB limit for Railway free tier
 
 # Setup
 app = FastAPI(title="Unicode to KrutiDev Converter")
@@ -103,7 +107,14 @@ async def convert_file(file: UploadFile = File(...)):
             raise Exception("Failed to save uploaded file")
         
         file_size = os.path.getsize(input_path)
-        logger.info(f"File saved successfully. Size: {file_size} bytes")
+        logger.info(f"File saved successfully. Size: {file_size} bytes ({file_size / (1024*1024):.2f} MB)")
+        
+        # Check file size limit
+        if file_size > MAX_FILE_SIZE:
+            raise Exception(f"File too large ({file_size / (1024*1024):.1f}MB). Maximum allowed is {MAX_FILE_SIZE / (1024*1024):.0f}MB")
+        
+        # Force garbage collection before processing large files
+        gc.collect()
 
         # Convert
         output_filename = f"KrutiDev_{file.filename}"
@@ -111,6 +122,9 @@ async def convert_file(file: UploadFile = File(...)):
         
         logger.info(f"Starting conversion. Output path: {output_path}")
         converter.convert_file(input_path, output_path)
+        
+        # Force garbage collection after conversion
+        gc.collect()
         
         # Verify output was created
         if not os.path.exists(output_path):
