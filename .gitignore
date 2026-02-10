@@ -23,6 +23,7 @@ Thumbs.db
 
 # Temp files
 temp/
+temp_uploads/
 *.tmp
 *.temp
 
@@ -32,3 +33,10 @@ uploads/
 # Environment variables
 .env
 .env.local
+
+# Gemini / Agent files
+.gemini/
+.agent/
+
+# pytest cache
+.pytest_cache/

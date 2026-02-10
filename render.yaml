@@ -1,12 +1,14 @@
 services:
   - type: web
-    name: mangal-to-krutidev
-    env: python
+    name: unicode-to-krutidev
+    runtime: python
     region: oregon
     plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn ui.web_app:app --host 0.0.0.0 --port $PORT
-    healthCheckPath: /
+    startCommand: gunicorn ui.web_app:app --workers 2 --worker-class uvicorn.workers.UvicornWorker --bind 0.0.0.0:$PORT --timeout 120 --keep-alive 5
+    healthCheckPath: /health
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.4
+        value: "3.11.4"
+      - key: UPLOAD_DIR
+        value: /tmp/fontchanger_uploads
